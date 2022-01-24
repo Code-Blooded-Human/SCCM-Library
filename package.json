@@ -1,0 +1,28 @@
+{
+  "name": "sccm-library",
+  "version": "1.0.0",
+  "description": "Library to read, write and update data on SCOSTA based smart cards. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Code-Blooded-Human/SCCM-Library.git"
+  },
+  "keywords": [
+    "SCOSTA",
+    "Smart",
+    "Cards",
+    "Smartcard",
+    "ISO-7816",
+    "ISO-14443",
+    "NFC"
+  ],
+  "author": "Abhishek Shingane, Kumari Rani",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Code-Blooded-Human/SCCM-Library/issues"
+  },
+  "homepage": "https://github.com/Code-Blooded-Human/SCCM-Library#readme"
+}
