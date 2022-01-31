@@ -32,8 +32,8 @@ pcsc.on('reader', function(reader) {
                         console.log(err);
                     } else {
                         console.log('Protocol(', reader.name, '):', protocol);
-                        sc_reader.registerReader(reader,protocol);
-                        sc_reader.cardConnected();
+                        cardReader.pcscReaderConnected(reader,protocol);
+                        cardReader.cardConnected();
                     }
                 });
             }
@@ -46,4 +46,4 @@ pcsc.on('reader', function(reader) {
 });
 
 
-module.exports = sc_reader;
+module.exports = cardReader;

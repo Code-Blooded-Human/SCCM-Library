@@ -4,7 +4,8 @@
   "description": "Library to read, write and update data on SCOSTA based smart cards. ",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "cp ./asn1/asn1helper.py ~/.local/bin/asn1helper.py; chmod +x ~/.local/bin/asn1helper.py;"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
   "homepage": "https://github.com/Code-Blooded-Human/SCCM-Library#readme",
   "dependencies": {
     "await-exec": "^0.1.2",
-    "pino": "^7.6.4"
+    "pino": "^7.6.4",
+    "pcsclite": "^1.0.0"
   }
 }

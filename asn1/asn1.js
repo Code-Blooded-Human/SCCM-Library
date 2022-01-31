@@ -9,15 +9,17 @@ const readFileAsync = promisify(fs.readFile)
 const writeFileAsync = promisify(fs.writeFile)
 
 
-function berToJson(rawBer, asn1Schema, asn1Identifier){
+function berToJson(rawBer, asn1Schema){
     return new Promise((resolve,reject)=>{
         (async ()=>{
             try{
-                let berArray = hexStringToByteArray(rawBer);
+                
                 // TODO: Generate File names randomly
-                await writeFileAsync("/tmp/raw_input.hex", berArray.toString('hex'))
+                const asn1SchemaAsArray = asn1Schema.split(" ");
+                const asn1Identifier = asn1SchemaAsArray[asn1SchemaAsArray.indexOf('BEGIN')+1]
+                await writeFileAsync("/tmp/raw_input.hex", rawBer.toString('hex'))
                 await writeFileAsync("/tmp/asn1Schema.asn", asn1Schema);
-                const { stdout, stderr } = await exec(`python3 ./decode.py /tmp/asn1Schema.asn /tmp/raw_input.hex /tmp/out.json ${asn1Identifier}`);
+                const { stdout, stderr } = await exec(`python3 ~/.local/bin/asn1helper.py /tmp/asn1Schema.asn /tmp/raw_input.hex /tmp/out.json ${asn1Identifier}`);
                 if(stderr){
                     throw(stderr);
                     return;

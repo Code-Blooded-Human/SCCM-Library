@@ -1,10 +1,11 @@
 const fs = require('fs');
-const { promisify } = require('util')
+const { promisify } = require('util');
+const Card = require('../Card/Card');
 const readFileAsync = promisify(fs.readFile)
 const logger = require('pino')();
 class CardReader{
     constructor(){
-        this.pcscReader = undefinded;
+        this.pcscReader = undefined;
         this.pcscProtocol = undefined;
         this.cardConnectedEventHandler = undefined;
         this.scf = undefined;
@@ -26,6 +27,7 @@ class CardReader{
         this.pcscProtocol = pcscProtocol;
     }
 
+
     readSCF(scfPath){
         return new Promise((resolve, reject)=>{
             (async ()=>{
@@ -37,7 +39,7 @@ class CardReader{
             })
         })
     }
-    sendAPDU(apdu,responseLength){
+    async sendAPDU(apdu,responseLength){
         return new Promise((resolve,reject)=>{
             logger.info("SENDING APDU ->", new Buffer(apdu));
             this.pcscReader.transmit(new Buffer(apdu), responseLength, this.pcscProtocol, function(err, data) {
@@ -46,7 +48,11 @@ class CardReader{
                     reject(err)
                 } else {
                     logger.info("GOT BACK ->", data);
-                    resolve(data);
+                    const buf = Buffer.from(data);
+                    const d = buf.subarray(0,buf.length-2) ;
+                    const status = buf.subarray(buf.length-2, buf.length);
+        
+                    resolve([d,status]);
                 }
             });
         });

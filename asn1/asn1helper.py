@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 
 import asn1tools
 import sys
