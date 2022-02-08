@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { promisify } = require('util');
 const Card = require('../Card/Card');
+const SCF = require('../SCF/SCF');
 const readFileAsync = promisify(fs.readFile)
 const logger = require('pino')();
 class CardReader{
@@ -13,6 +14,9 @@ class CardReader{
         this.keys = {};
     }
 
+    registerSCF(filePath){
+        this.scf = new SCF(filePath);
+    }
     onCardConnect(event){
         this.cardConnectedEventHandler = event;
     }

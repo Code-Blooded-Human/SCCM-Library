@@ -5,23 +5,49 @@ import sys
 import binascii
 import json
 
-asn1_file = sys.argv[1]
-hex_file = sys.argv[2]
-out_file = sys.argv[3]
-attribute_name = sys.argv[4]
+fn = sys.argv[1]
+print(fn)
 
-asn1Schema = asn1tools.compile_files(asn1_file)
+if fn == "berToJSON":
+    asn1_file = sys.argv[2]
+    hex_file = sys.argv[3]
+    out_file = sys.argv[4]
+    attribute_name = sys.argv[5]
 
-with open(hex_file, 'r') as f:
-    data = f.read()
+    asn1Schema = asn1tools.compile_files(asn1_file)
 
-hex_data = bytearray.fromhex(data)
+    with open(hex_file, 'r') as f:
+        data = f.read()
 
-decoded_data = asn1Schema.decode(attribute_name, hex_data)
+    hex_data = bytearray.fromhex(data)
 
-for key in decoded_data:
-    if isinstance(decoded_data[key], (bytes, bytearray)):
-        decoded_data[key] = list(decoded_data[key])
+    decoded_data = asn1Schema.decode(attribute_name, hex_data)
 
-with open(out_file, "w") as json_out:
-    json.dump(decoded_data, json_out)
+    for key in decoded_data:
+        if isinstance(decoded_data[key], (bytes, bytearray)):
+            decoded_data[key] = list(decoded_data[key])
+
+    with open(out_file, "w") as json_out:
+        json.dump(decoded_data, json_out)
+
+if fn == "JSONToBer":
+    print('JSONTOBER Running')
+    asn1_file = sys.argv[2]
+    jsonFile = sys.argv[3]
+    out_file = sys.argv[4]
+    attribute_name = sys.argv[5]
+
+    with open(jsonFile,"r") as json_file:
+        data = json.load(json_file)
+    
+    for key in data:
+        if isinstance(data[key], (list)):
+            data[key] = bytearray(data[key])
+
+    asn1Schema = asn1tools.compile_files(asn1_file)
+    encoded = asn1Schema.encode(attribute_name, data)
+    
+    with open(out_file, "wb") as hex_out:
+        hex_out.write(encoded)
+
+

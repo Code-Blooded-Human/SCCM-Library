@@ -1,4 +1,5 @@
 const P = require("pino");
+const { berToJson } = require("../asn1/asn1");
 const APDU = require("../CardReader/Apdu");
 const hexStringToByteArray = require("../utils/hexToBytes");
 
@@ -78,9 +79,38 @@ class Card{
         })
     }
 
+    readAttribute(attributeName){
+        return new Promise((resolve, reject)=>{
+            (async()=>{
+                const {filePath, fileID} = this.scf.getFileInfoByAttributeName(attributeName);
+                console.log(fileID);
+                const dataLength = this.scf.fileSize(fileID);
+                console.log(dataLength);
+                const fileSchema = this.scf.schema(fileID);
+                console.log(fileSchema);
+                const fileData = await this.readFileRaw(filePath, dataLength );
+                const parsedJson = await berToJson(fileData, fileSchema);
+                resolve(parsedJson[attributeName]);
+                return;
+            })()
+        });
+    }
 
+    createFile(fileIdentifier){
 
+    }
 
+    writeFile(fileIdentifier){
+
+    }
+
+    writeAttribute(fileIdentifier){
+
+    }
+
+    initCard(){
+        //create all the files
+    }
 
     // //PUBLIC FUNCTIONS EXPOSED OUTSIDE
 

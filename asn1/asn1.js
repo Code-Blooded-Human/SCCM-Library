@@ -2,7 +2,7 @@ const exec = require('await-exec')
 const fs = require('fs');
 const logger = require('pino')();
 const { promisify } = require('util')
-const hexStringToByteArray = require('../utils/hexToBytes');
+
 
 
 const readFileAsync = promisify(fs.readFile)
@@ -19,7 +19,7 @@ function berToJson(rawBer, asn1Schema){
                 const asn1Identifier = asn1SchemaAsArray[asn1SchemaAsArray.indexOf('BEGIN')+1]
                 await writeFileAsync("/tmp/raw_input.hex", rawBer.toString('hex'))
                 await writeFileAsync("/tmp/asn1Schema.asn", asn1Schema);
-                const { stdout, stderr } = await exec(`python3 ~/.local/bin/asn1helper.py /tmp/asn1Schema.asn /tmp/raw_input.hex /tmp/out.json ${asn1Identifier}`);
+                const { stdout, stderr } = await exec(`python3 ~/.local/bin/asn1helper.py berToJSON /tmp/asn1Schema.asn /tmp/raw_input.hex /tmp/out.json ${asn1Identifier}`);
                 if(stderr){
                     throw(stderr);
                     return;
@@ -38,8 +38,27 @@ function berToJson(rawBer, asn1Schema){
 
 function jsonToBer(jsonData, asn1Schema){
     return new Promise((resolve,reject)=>{
-        resolve('data');
+        (async()=>{
+
+        await writeFileAsync("/tmp/json_data.json", jsonData)
+        await writeFileAsync("/tmp/asn1Schema.asn", asn1Schema);
+
+        const asn1SchemaAsArray = asn1Schema.split(" ");
+        const asn1Identifier = asn1SchemaAsArray[asn1SchemaAsArray.indexOf('BEGIN')+1]
+
+        const { stdout, stderr } = await exec(`python3 ~/.local/bin/asn1helper.py JSONToBer /tmp/asn1Schema.asn /tmp/json_data.json /tmp/out.hex ${asn1Identifier}`);
+        if(stderr){
+            throw(stderr);
+            return;
+        }
+        const hexData = await readFileAsync('/tmp/out.hex');
+        console.log(hexData);
+
+    
+        resolve(hexData);
+    })()
     });
+    
 }
 
 module.exports = {berToJson, jsonToBer};
