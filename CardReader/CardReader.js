@@ -2,6 +2,7 @@ const fs = require('fs');
 const { promisify } = require('util');
 const Card = require('../Card/Card');
 const SCF = require('../SCF/SCF');
+const responseStatusMeaning = require('../utils/statusParser');
 const readFileAsync = promisify(fs.readFile)
 const logger = require('pino')();
 class CardReader{
@@ -30,8 +31,7 @@ class CardReader{
         this.pcscReader = pcscReader;
         this.pcscProtocol = pcscProtocol;
     }
-
-
+    
     readSCF(scfPath){
         return new Promise((resolve, reject)=>{
             (async ()=>{
@@ -45,16 +45,21 @@ class CardReader{
     }
     async sendAPDU(apdu,responseLength){
         return new Promise((resolve,reject)=>{
-            logger.info("SENDING APDU ->", new Buffer(apdu));
+            // logger.info("SENDING APDU ->", new Buffer(apdu));
+            console.log({msg:'Sending apdu', apdu:Buffer.from(apdu)})
             this.pcscReader.transmit(new Buffer(apdu), responseLength, this.pcscProtocol, function(err, data) {
                 if (err) {
                     logger.error(err);
                     reject(err)
                 } else {
-                    logger.info("GOT BACK ->", data);
+                    // logger.info("GOT BACK ->", data);
                     const buf = Buffer.from(data);
                     const d = buf.subarray(0,buf.length-2) ;
                     const status = buf.subarray(buf.length-2, buf.length);
+
+                    responseStatusMeaning.forEach((el)=>{if(el.sw1==status[0] && el.sw2==status[1]){
+                        console.log({from:'SendAPDU Function', responseMeaning:el.meaning});
+                    }})
         
                     resolve([d,status]);
                 }

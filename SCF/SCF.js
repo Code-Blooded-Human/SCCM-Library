@@ -11,25 +11,32 @@ class SCF{
     }
 
 
+    getFiles(){
+        return this.scf.fs;
+    }
     getFileInfoByAttributeName(attributeName){
         let filePath;
         let fileID;
         this.scf.attributes.forEach((el)=>{
+            console.log({el});
             if(el.name == attributeName){
-                filePath = el.filePath;
-                fileID = el.fileID;
+                fileID = el.storedIn;
             }
         })
+        this.scf.fs.forEach((file)=>{
+            if(file.fileId == fileID){
+                filePath=file.path;
+            }
+        })
+        console.log({filePath});
         return {filePath, fileID};
     }
 
     fileSize(fileID){
         let size = 0;
         this.scf.fs.forEach((el)=>{
-            console.log("--------")
-            console.log(el);
-            if(el.id == fileID){
-                size = el.size;
+            if(el.fileId == fileID){
+                size = el.EFFileInfo.fileMaxSize;
             }
         })
         return size;
@@ -38,7 +45,7 @@ class SCF{
     schema(fileID){
         let schema = 0;
         this.scf.fs.forEach((el)=>{
-            if(el.id == fileID){
+            if(el.fileId == fileID){
                 schema = el.schema;
             }
         })

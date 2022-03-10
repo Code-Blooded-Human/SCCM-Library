@@ -1,0 +1,246 @@
+{
+    "header": {
+        "description": "This is a sample SCCM Configuration File",
+        "policymaker": {
+            "name": "Kumari Rani",
+            "email": "krani@iitbhilai.ac.in"
+        },
+        "version": "1.0",
+        "hash": "",
+        "createdFrom": "",
+        "backwardCompatible": true,
+        "createdOn": "2022-2-8 22:44:48"
+    },
+    "keys": [],
+    "passwords": [
+        {
+            "identifier": 1,
+            "name": "AdminPass",
+            "storedIn": "",
+            "maxLength": "20",
+            "minLength": "8",
+            "alphaNumeric": false,
+            "numericOnly": false,
+            "specialChars": false
+        }
+    ],
+    "securityEnvironments": "",
+    "accessRules": [],
+    "attributes": [
+        {
+            "id": 1,
+            "name": "name",
+            "dataType": {
+                "type": "String",
+                "maxLength": "20"
+            },
+            "ACRReadWriteUpdate": {
+                "readACR": "Always",
+                "writeACR": "Always",
+                "updateACR": "Always"
+            },
+            "storedIn": 16132
+        },
+        {
+            "id": 2,
+            "name": "branch",
+            "dataType": {
+                "type": "String",
+                "maxLength": "20"
+            },
+            "ACRReadWriteUpdate": {
+                "readACR": "Always",
+                "writeACR": "Always",
+                "updateACR": "Always"
+            },
+            "storedIn": 16132
+        }
+    ],
+    "fs": [
+        {
+            "fileId": 16128,
+            "fileType": "DF",
+            "DFFileInfo": {
+                "DFName": "MasterFile",
+                "accessRules": {
+                    "delete": "Never",
+                    "terminate": "Never",
+                    "activate": "Always",
+                    "deactivate": "Never",
+                    "createDF": "Always",
+                    "createEF": "Always",
+                    "deleteChild": "Never"
+                }
+            },
+            "path": [
+                16128
+            ],
+            "FCPTLVCoding": [
+                98,
+                29,
+                130,
+                1,
+                56,
+                131,
+                2,
+                63,
+                0,
+                138,
+                1,
+                1,
+                171,
+                17,
+                128,
+                1,
+                127,
+                151,
+                0,
+                151,
+                0,
+                144,
+                0,
+                151,
+                0,
+                144,
+                0,
+                144,
+                0,
+                151,
+                0
+            ]
+        },
+        {
+            "fileId": 16129,
+            "fileType": "EF",
+            "EFFileInfo": {
+                "shortEFId": 8,
+                "EFCategory": "internal",
+                "EFFileDataType": "record",
+                "maxRecordSize": 24,
+                "numRecords": 1,
+                "writeBehaviour": "oneTimeWrite",
+                "EFStructure": "linearVariableSize",
+                "accessRules": {
+                    "delete": "Never",
+                    "terminate": "Never",
+                    "activate": "Always",
+                    "deactivate": "Never",
+                    "write": "Always",
+                    "update": "Never",
+                    "read": "Never"
+                }
+            },
+            "path": [
+                16128,
+                16129
+            ],
+            "FCPTLVCoding": [
+                98,
+                36,
+                130,
+                5,
+                12,
+                1,
+                0,
+                24,
+                1,
+                131,
+                2,
+                63,
+                1,
+                136,
+                1,
+                8,
+                138,
+                1,
+                1,
+                171,
+                17,
+                128,
+                1,
+                127,
+                151,
+                0,
+                151,
+                0,
+                144,
+                0,
+                151,
+                0,
+                144,
+                0,
+                151,
+                0,
+                151,
+                0
+            ]
+        },
+        {
+            "fileId": 16132,
+            "fileType": "EF",
+            "EFFileInfo": {
+                "shortEFId": 16,
+                "EFCategory": "working",
+                "EFFileDataType": "binary",
+                "fileMaxSize": 54,
+                "writeBehaviour": "oneTimeWrite",
+                "EFStructure": "transparent",
+                "accessRules": {
+                    "delete": "Never",
+                    "terminate": "Never",
+                    "activate": "Always",
+                    "deactivate": "Never",
+                    "write": "Always",
+                    "update": "Always",
+                    "read": "Always"
+                }
+            },
+            "path": [
+                16128,
+                16132
+            ],
+            "attributesAS1DataFormat": "AttributesInfo DEFINITIONS IMPLICIT TAGS ::= BEGIN Info ::= SEQUENCE {name UTF8String, branch UTF8String} END",
+            "FCPTLVCoding": [
+                98,
+                37,
+                128,
+                2,
+                0,
+                54,
+                130,
+                2,
+                1,
+                1,
+                131,
+                2,
+                63,
+                4,
+                136,
+                1,
+                16,
+                138,
+                1,
+                1,
+                171,
+                17,
+                128,
+                1,
+                127,
+                151,
+                0,
+                151,
+                0,
+                144,
+                0,
+                151,
+                0,
+                144,
+                0,
+                144,
+                0,
+                144,
+                0
+            ]
+        }
+    ]
+}

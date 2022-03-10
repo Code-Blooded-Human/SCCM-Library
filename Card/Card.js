@@ -16,9 +16,13 @@ class Card{
         return new Promise((resolve,reject)=>{
             (async()=>{
                 try{
+                    
+                    let d = hexStringToByteArray(fileIdentifier);
+                    console.log({fileIdentifier, m:'debug', out:Buffer.from(d)});
                     const apdu = new APDU({cla:0x00, ins:0xA4, p1:0x00, p2:0x0c, data:hexStringToByteArray(fileIdentifier), le:2});
                     const [response,status] = await this.reader.sendAPDU(apdu.val(),2);
                     console.log("Selected file = ", fileIdentifier);
+                    console.log({des:"select file", apdu:apdu.val(), status});
                     resolve(response);
                 }catch(e){
                     console.log(e);
@@ -83,11 +87,11 @@ class Card{
         return new Promise((resolve, reject)=>{
             (async()=>{
                 const {filePath, fileID} = this.scf.getFileInfoByAttributeName(attributeName);
-                console.log(fileID);
+               
                 const dataLength = this.scf.fileSize(fileID);
-                console.log(dataLength);
+               
                 const fileSchema = this.scf.schema(fileID);
-                console.log(fileSchema);
+                console.log({filePath, dataLength});
                 const fileData = await this.readFileRaw(filePath, dataLength );
                 const parsedJson = await berToJson(fileData, fileSchema);
                 resolve(parsedJson[attributeName]);
@@ -96,20 +100,73 @@ class Card{
         });
     }
 
-    createFile(fileIdentifier){
+    createFile(filePath){
+        return new Promise((resolve, reject)=>{
 
+        
+        (async()=>{
+
+        
+        let fileIdentifier = filePath[filePath.length -1];
+        if(filePath.length > 1){
+            for(var i=0;i<filePath.length-1;i++){
+                await this.selectFile(filePath[i]);
+            }
+        }
+        let fcp;
+        this.scf.scf.fs.forEach((file)=>{
+            if(file.fileId == fileIdentifier){
+                fcp = file.FCPTLVCoding;
+            }
+        })
+        let apdu = new APDU({cla:0x00, ins:0xE0, p1:0, p2:0, data:fcp, le:0x05});
+        const [response,status] = await this.reader.sendAPDU(apdu.val(),5);
+
+        console.log(Buffer.from(apdu.val()))
+
+        console.log(response);
+        console.log(status);
+
+        resolve('response');
+        
+        })();
+    });
     }
 
-    writeFile(fileIdentifier){
-
+    writeFileBinary(filePath, rawData){
+        return new Promise((resolve,reject)=>{
+            (async()=>{
+                let fileIdentifier = filePath[filePath.length-1];
+                for(var i=0;i<filePath.length;i++){
+                    await this.selectFile(filePath[i]);
+                }
+                let apdu = new APDU({cla:0x00, ins:0xD0, p1:0x0, p2:0x0, data:[...rawData], le:0x05});
+                console.log({apdu:apdu.val()});
+                const [response,status] = await this.reader.sendAPDU(apdu.val(),5);
+                console.log({response,status});
+            })()
+        });
+        
     }
 
-    writeAttribute(fileIdentifier){
 
-    }
 
     initCard(){
         //create all the files
+        return new Promise((resolve, reject)=>{
+            (async()=>
+                {
+                    // CREATE ALL THE FILES.
+                    let fs = scf.getFiles();
+                    for(file in fs){
+                        await this.createFile(file.path);
+                    }
+
+                    // Add passwords
+                }
+            )()
+        })
+       
     }
 
     // //PUBLIC FUNCTIONS EXPOSED OUTSIDE
@@ -126,6 +183,9 @@ class Card{
     // writeAttribute();
     // updateAttribute();
     // initCard(); // Generate File Structure and store keys and passwords on card. 
+
+    // verifyPassword(name,value);
+    // 
 }
 
 module.exports = Card;
