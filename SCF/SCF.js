@@ -46,7 +46,7 @@ class SCF{
         let schema = 0;
         this.scf.fs.forEach((el)=>{
             if(el.fileId == fileID){
-                schema = el.schema;
+                schema = el.attributesAS1DataFormat;
             }
         })
         return schema;

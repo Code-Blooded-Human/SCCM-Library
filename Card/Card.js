@@ -93,8 +93,30 @@ class Card{
                 const fileSchema = this.scf.schema(fileID);
                 console.log({filePath, dataLength});
                 const fileData = await this.readFileRaw(filePath, dataLength );
+                console.log({fileSchema});
                 const parsedJson = await berToJson(fileData, fileSchema);
                 resolve(parsedJson[attributeName]);
+                return;
+            })()
+        });
+    }
+    readAttributes(attributeNames){
+        return new Promise((resolve, reject)=>{
+            (async()=>{
+                const {filePath, fileID} = this.scf.getFileInfoByAttributeName(attributeNames[0]);
+               
+                const dataLength = this.scf.fileSize(fileID);
+               
+                const fileSchema = this.scf.schema(fileID);
+                console.log({filePath, dataLength});
+                const fileData = await this.readFileRaw(filePath, dataLength );
+                console.log({fileSchema});
+                const parsedJson = await berToJson(fileData, fileSchema);
+                let out ={};
+                for(var i =0; i<attributeNames.length; i++){
+                    out[attributeNames[i]] = parsedJson[attributeNames[i]];
+                }
+                resolve(out);
                 return;
             })()
         });
@@ -151,23 +173,23 @@ class Card{
 
 
 
-    initCard(){
-        //create all the files
-        return new Promise((resolve, reject)=>{
-            (async()=>
-                {
-                    // CREATE ALL THE FILES.
-                    let fs = scf.getFiles();
-                    for(file in fs){
-                        await this.createFile(file.path);
-                    }
+    // initCard(){
+    //     //create all the files
+    //     return new Promise((resolve, reject)=>{
+    //         (async()=>
+    //             {
+    //                 // CREATE ALL THE FILES.
+    //                 let fs = scf.getFiles();
+    //                 for(file in fs){
+    //                     await this.createFile(file.path);
+    //                 }
 
-                    // Add passwords
-                }
-            )()
-        })
+    //                 // Add passwords
+    //             }
+    //         )()
+    //     })
        
-    }
+    // }
 
     // //PUBLIC FUNCTIONS EXPOSED OUTSIDE
 
