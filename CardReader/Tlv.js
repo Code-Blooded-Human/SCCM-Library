@@ -30,7 +30,7 @@ class TLV{
 
     getValue(){
         let tlvArray = [this.tag, this.len];
-        if(this.value instanceof Array)
+        if(this.value instanceof Array){}
     }
 
 }

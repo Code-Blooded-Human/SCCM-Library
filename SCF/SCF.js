@@ -1,12 +1,19 @@
 const fs = require('fs');
+const hjson = require('hjson');
 const { promisify } = require('util')
 const readFileAsync = promisify(fs.readFile)
+const { readFile } = require('fs/promises')
+
+async function content(path) {  
+    return await readFile(path, 'utf8')
+  }
     
 class SCF{
     constructor(filepath){
         (async()=>{
-            this.scfFile = await readFileAsync(filepath);
-            this.scf = JSON.parse(this.scfFile);
+            this.scfFile = await content(filepath);
+            this.scf = hjson.parse(this.scfFile);
+            console.log(this.scf);
         })()
     }
 
@@ -23,20 +30,23 @@ class SCF{
                 fileID = el.storedIn;
             }
         })
-        this.scf.fs.forEach((file)=>{
-            if(file.fileId == fileID){
-                filePath=file.path;
-            }
-        })
-        console.log({filePath});
+       filePath = fileID;
+        // this.scf.fs.forEach((file)=>{
+        //     if(file.id == fileID){
+        //         filePath=file.path;
+        //     }
+        // })
+        // console.log({filePath});
+        fileID = filePath[filePath.length -1]
+        console.log( {filePath, fileID})
         return {filePath, fileID};
     }
 
     fileSize(fileID){
         let size = 0;
         this.scf.fs.forEach((el)=>{
-            if(el.fileId == fileID){
-                size = el.EFFileInfo.fileMaxSize;
+            if(el.id == fileID){
+                size = el.size;
             }
         })
         return size;
@@ -45,8 +55,8 @@ class SCF{
     schema(fileID){
         let schema = 0;
         this.scf.fs.forEach((el)=>{
-            if(el.fileId == fileID){
-                schema = el.attributesAS1DataFormat;
+            if(el.id == fileID){
+                schema = el.asn1Schema;
             }
         })
         return schema;

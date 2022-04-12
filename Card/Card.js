@@ -9,6 +9,8 @@ class Card{
         this.reader = reader;
         this.cardInUse = false; // Lock APDU Transmissions
         this.scf = scf;
+        // this.passwords = JSON.parse(JSON.stringify(this.reader.password)); // Create copy
+        // this.keys = JSON.parse(JSON.stringify(this.reader.key)); // Create copy
     }
 
 
@@ -100,6 +102,7 @@ class Card{
             })()
         });
     }
+    
     readAttributes(attributeNames){
         return new Promise((resolve, reject)=>{
             (async()=>{
@@ -166,48 +169,62 @@ class Card{
                 console.log({apdu:apdu.val()});
                 const [response,status] = await this.reader.sendAPDU(apdu.val(),5);
                 console.log({response,status});
+                resolve();
             })()
         });
         
     }
 
+    async _writeRecord(filePath, recordNo, data){
+
+    }
+    
+    async _writekey(name, value){
+
+    }
+    async _writePassword(name, value){
+
+    }
+
+    
+    async registerPasswordValue(name, value){
+
+    }
+    async registerKeyValue(name, value){
+
+    }
 
 
-    // initCard(){
-    //     //create all the files
-    //     return new Promise((resolve, reject)=>{
-    //         (async()=>
-    //             {
-    //                 // CREATE ALL THE FILES.
-    //                 let fs = scf.getFiles();
-    //                 for(file in fs){
-    //                     await this.createFile(file.path);
-    //                 }
+    async _verifyPassword(){
 
-    //                 // Add passwords
-    //             }
-    //         )()
-    //     })
-       
-    // }
+    }
 
-    // //PUBLIC FUNCTIONS EXPOSED OUTSIDE
+    computeCCT(){
 
-    // readFile(filePath)
-    // writeFile(filePath, data);
-    // updateFile(filePath, data);
+    }
 
 
-    // registerPassword();
-    // registerKey();
+    async createCard(){
 
-    // readAttribute();
-    // writeAttribute();
-    // updateAttribute();
-    // initCard(); // Generate File Structure and store keys and passwords on card. 
+        
 
-    // verifyPassword(name,value);
-    // 
+        // create MF:
+        // select MF;
+        // create 3f01;
+        // create 3f02
+        // create 3f03;
+        // Create personal files
+        
+        // add passwords;
+        // add keys;
+
+    }
+
+
+
+
+
+ 
 }
 
 module.exports = Card;
