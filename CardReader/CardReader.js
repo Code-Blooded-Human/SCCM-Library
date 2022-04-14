@@ -5,6 +5,9 @@ const SCF = require('../SCF/SCF');
 const responseStatusMeaning = require('../utils/statusParser');
 const readFileAsync = promisify(fs.readFile)
 const logger = require('pino')();
+
+
+const DUMMYREADER = true;
 class CardReader{
     constructor(){
         this.pcscReader = undefined;
@@ -44,9 +47,17 @@ class CardReader{
         })
     }
     async sendAPDU(apdu,responseLength){
+        
         return new Promise((resolve,reject)=>{
             // logger.info("SENDING APDU ->", new Buffer(apdu));
+            
             console.log({msg:'Sending apdu', apdu:Buffer.from(apdu)})
+            if(DUMMYREADER){
+                console.log({msg:"DUMMY MODE ON"});
+                resolve([[0],[0x90,0x00]]);
+                return;
+            }
+            console.log("HERE")
             this.pcscReader.transmit(new Buffer(apdu), responseLength, this.pcscProtocol, function(err, data) {
                 if (err) {
                     logger.error(err);
@@ -66,6 +77,7 @@ class CardReader{
             });
         });
     }
+
 }
 
 module.exports = CardReader;

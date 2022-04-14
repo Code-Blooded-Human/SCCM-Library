@@ -14,14 +14,24 @@ const writeFileAsync = promisify(fs.writeFile)
 async function onCardConnect(card){
     console.log("Card Connection established");
     
-    let data = await card.readAttribute(['name']);
-    console.log(data);
+    // let data = await card.readAttribute(['name']);
+    // console.log(data);
     
     
     // console.log(data);
     // const selFile =  await card.selectFile(0x3f00)
     // console.log(selFile);
 
+    // card._writeRecord([0x3f00,0x3f02], 1, [0x01,0x02,0x03,0x04,0x05]);
+
+
+    // await card._writePassword("Pass1","abhi");
+
+    // await card._writeKey("Key1",[0x01,0x02,0x03,0x04,0x01,0x02,0x03,0x04,0x01,0x02,0x03,0x04,0x01,0x02,0x03,0x04])
+    // await card._verifyPassword("Pass1", "abhi");
+
+    let j = await card._readFileAsJSON([0x3f00,0x3f04]);
+    console.log(j);
 
     //CREATE 3f00
     // let d=[0x62, 33, 0x82, 0x01, 0x38, 0x83, 0x02, 0x3f, 0x00, 0x8a, 0x01, 0x05, 0xab, 17, 0x80, 0x01, 0x7f, 0x97, 0x00,  0x97, 0x00, 0x90, 0x00, 0x97, 0x00, 0x90, 0x00, 0x90, 0x00, 0x97, 0x00, 0x8d, 0x02, 0x3f, 0x03]
@@ -89,5 +99,5 @@ async function onCardConnect(card){
 
    
 }
-cardReader.registerSCF('./demo/new.hjson');
+cardReader.registerSCF('./demo/scf1.hjson');
 cardReader.onCardConnect(onCardConnect);

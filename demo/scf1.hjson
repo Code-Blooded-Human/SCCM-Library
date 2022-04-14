@@ -1,0 +1,243 @@
+{
+	header:
+	{
+		description: This is a sample SCCM Configuration File
+		policymaker: {name: "Kumari Rani", email: "krani@iitbhilai.ac.in"}
+		version: "1.0"
+		hash: ""
+		createdFrom: ""
+		backwardCompatible: true
+		createdOn: 2022-3-18 3:34:55
+	}
+	keys:
+	[
+		{id: 1, name: "Key1", storedIn: [16128,16130], maxSize: 10, usedForChecksumComputation: true, description: ""}
+	]
+	passwords:
+	[
+		{id: 1, name: "Pass1", storedIn: [16128,16129], maxSize: 20, description: ""}
+		{id: 2, name: "Pass2", storedIn: [16128,16129], maxSize: 15, description: ""}
+	]
+	securityEnvironment:
+	[
+		{seid: 1, keyReference: 1}
+	]
+	accessRules:
+	[
+		{
+			id: 0
+			name: ACR1
+			condition:
+			{
+				leftClause: {id: 1, name: "Pass1", storedIn: [16128,16129], maxSize: 20, description: ""}
+				operator: OR
+				rightClause: {id: 2, name: "Pass2", storedIn: [16128,16129], maxSize: 15, description: ""}
+			}
+			description: ""
+		}
+		{
+			id: 1
+			name: ACR2
+			condition:
+			{
+				leftClause: {id: 1, name: "Pass1", storedIn: [16128,16129], maxSize: 20, description: ""}
+				operator: AND
+				rightClause: {id: 2, name: "Pass2", storedIn: [16128,16129], maxSize: 15, description: ""}
+			}
+			description: ""
+		}
+	]
+	attributes:
+	[
+		{
+			id: 0
+			name: Name
+			type: String
+			maxSize: 40
+			permisionContol:
+			{
+				read: Always
+				write:
+				{
+					id: 1
+					name: ACR2
+					condition:
+					{
+						leftClause: {id: 1, name: "Pass1", storedIn: [16128,16129], maxSize: 20, description: ""}
+						operator: AND
+						rightClause: {id: 2, name: "Pass2", storedIn: [16128,16129], maxSize: 15, description: ""}
+					}
+					description: ""
+				}
+				update: Never
+			}
+			description: ""
+			storedIn: [16128, 16132]
+		}
+		{
+			id: 1
+			name: AdhaarNumber
+			type: Int
+			maxSize: 14
+			permisionContol:
+			{
+				read:
+				{
+					id: 0
+					name: ACR1
+					condition:
+					{
+						leftClause: {id: 1, name: "Pass1", storedIn: [16128,16129], maxSize: 20, description: ""}
+						operator: OR
+						rightClause: {id: 2, name: "Pass2", storedIn: [16128,16129], maxSize: 15, description: ""}
+					}
+					description: ""
+				}
+				write:
+				{
+					id: 1
+					name: ACR2
+					condition:
+					{
+						leftClause: {id: 1, name: "Pass1", storedIn: [16128,16129], maxSize: 20, description: ""}
+						operator: AND
+						rightClause: {id: 2, name: "Pass2", storedIn: [16128,16129], maxSize: 15, description: ""}
+					}
+					description: ""
+				}
+				update: Never
+			}
+			description: ""
+			storedIn: [16128, 16133]
+		}
+	]
+	fs:
+	[
+		{
+			id: 16128
+			path: [16128]
+			size: 0
+			permissionControl: {createDf: "Always", createEf: "Always", deleteChild: "Never"}
+			type: DF
+			maxRecordSize: undefined
+			numberRecord: undefined
+			fcp: [98, 33, 130, 1, 56, 131, 2, 63, 0, 138, 1, 5, 171, 17, 128, 1, 127, 151, 0, 151, 0, 144, 0, 151, 0, 144, 0, 144, 0, 151, 0, 141, 2, 63, 3]
+			asn1Schema: undefined
+			description: Master File
+		}
+		{
+			id: 16129
+			path: [16128, 16129]
+			size: 0
+			permissionControl: {read: "Always", write: "Always", update: "Always"}
+			type: EF
+			maxRecordSize: 20
+			numberRecord: 2
+			fcp: [98, 36, 130, 5, 12, 1, 0, 20, 2, 131, 2, 63, 1, 136, 1, 8, 138, 1, 5, 171, 17, 128, 1, 127, 151, 0, 151, 0, 144, 0, 151, 0, 144, 0, 144, 0, 144, 0]
+			asn1Schema: undefined
+			description: PIN file
+		}
+		{
+			id: 16130
+			path: [16128, 16130]
+			size: 0
+			permissionControl: {read: "Always", write: "Always", update: "Always"}
+			type: EF
+			maxRecordSize: 10
+			numberRecord: 1
+			fcp: [98, 36, 130, 5, 12, 1, 0, 10, 1, 131, 2, 63, 2, 136, 1, 16, 138, 1, 5, 171, 17, 128, 1, 127, 151, 0, 151, 0, 144, 0, 151, 0, 144, 0, 144, 0, 144, 0]
+			asn1Schema: undefined
+			description: Key file
+		}
+		{
+			id: 16131
+			path: [16128, 16131]
+			size: 0
+			permissionControl: {read: "Always", write: "Always", update: "Always"}
+			type: EF
+			maxRecordSize: 10
+			numberRecord: 1
+			fcp: [98, 36, 130, 5, 12, 1, 0, 10, 1, 131, 2, 63, 3, 136, 1, 24, 138, 1, 5, 171, 17, 128, 1, 127, 151, 0, 151, 0, 144, 0, 151, 0, 144, 0, 144, 0, 144, 0]
+			asn1Schema: undefined
+			description: Security environment file
+		}
+		{
+			id: 16132
+			path: [16128, 16132]
+			size: 6500
+			permissionControl:
+			{
+				read: Always
+				write:
+				{
+					id: 1
+					name: ACR2
+					condition:
+					{
+						leftClause: {id: 1, name: "Pass1", storedIn: [16128,16129], maxSize: 20, description: ""}
+						operator: AND
+						rightClause: {id: 2, name: "Pass2", storedIn: [16128,16129], maxSize: 15, description: ""}
+					}
+					description: ""
+				}
+				update: Never
+			}
+			type: EF
+			maxRecordSize: undefined
+			numberRecord: undefined
+			fcp: [98, 53, 128, 2, 0, 40, 130, 2, 1, 1, 131, 2, 63, 4, 136, 1, 32, 138, 1, 5, 171, 33, 128, 1, 127, 151, 0, 151, 0, 144, 0, 151, 0, 175, 16, 164, 6, 149, 1, 8, 131, 1, 1, 164, 6, 149, 1, 8, 131, 1, 2, 151, 0, 144, 0]
+			asn1Schema:
+				'''
+BHILAIINFO1V2 DEFINITIONS IMPLICIT TAGS ::= BEGIN Info1FreeReadV2 ::= SEQUENCE { version INTEGER, id PrintableString, validupto PrintableString, name UTF8String, dob PrintableString, uid PrintableString, emergencyphone UTF8String, bloodgroup PrintableString, issuerauthority PrintableString, gender PrintableString, dateofissue PrintableString, designation [0] UTF8String OPTIONAL, program [1] UTF8String OPTIONAL, relation [2] PrintableString OPTIONAL, nameofprimary [3] UTF8String OPTIONAL, designationofprimary [4] UTF8String OPTIONAL, programofprimary [5] UTF8String OPTIONAL, doj [6] PrintableString OPTIONAL, dojofprimary [7] PrintableString OPTIONAL, photo OCTET STRING } END
+				'''
+			description: ""
+		}
+		{
+			id: 16133
+			path: [16128, 16133]
+			size: 14
+			permissionControl:
+			{
+				read:
+				{
+					id: 0
+					name: ACR1
+					condition:
+					{
+						leftClause: {id: 1, name: "Pass1", storedIn: [16128,16129], maxSize: 20, description: ""}
+						operator: OR
+						rightClause: {id: 2, name: "Pass2", storedIn: [16128,16129], maxSize: 15, description: ""}
+					}
+					description: ""
+				}
+				write:
+				{
+					id: 1
+					name: ACR2
+					condition:
+					{
+						leftClause: {id: 1, name: "Pass1", storedIn: [16128,16129], maxSize: 20, description: ""}
+						operator: AND
+						rightClause: {id: 2, name: "Pass2", storedIn: [16128,16129], maxSize: 15, description: ""}
+					}
+					description: ""
+				}
+				update: Never
+			}
+			type: EF
+			maxRecordSize: undefined
+			numberRecord: undefined
+			fcp: [98, 69, 128, 2, 0, 14, 130, 2, 1, 1, 131, 2, 63, 5, 136, 1, 40, 138, 1, 5, 171, 49, 128, 1, 127, 151, 0, 151, 0, 144, 0, 151, 0, 175, 16, 164, 6, 149, 1, 8, 131, 1, 1, 164, 6, 149, 1, 8, 131, 1, 2, 151, 0, 160, 16, 164, 6, 149, 1, 8, 131, 1, 1, 164, 6, 149, 1, 8, 131, 1, 2]
+			asn1Schema:
+				'''
+				AttributesInfo 
+				DEFINITIONS IMPLICIT TAGS ::= BEGIN 
+				Info ::= SEQUENCE {
+					AdhaarNumber INTEGER
+				} 
+				END
+				'''
+			description: ""
+		}
+	]
+}

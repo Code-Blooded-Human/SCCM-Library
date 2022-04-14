@@ -21,6 +21,19 @@ class SCF{
     getFiles(){
         return this.scf.fs;
     }
+
+    getSchemaFromFilePath(filePath){
+        (async()=>{
+            let schema;
+            this.scf.fs.forEach((f)=>{
+                if(f.path.toString() == filePath.toString){
+                    schema = f.asn1Schema;
+                }
+            })
+            return schema;
+        })();
+    }
+
     getFileInfoByAttributeName(attributeName){
         let filePath;
         let fileID;
@@ -42,6 +55,38 @@ class SCF{
         return {filePath, fileID};
     }
 
+    getMetaDataByPasswordName(name){
+        let filePath;
+        let passwordId;
+        this.scf.passwords.forEach((p)=>{
+            console.log(p);
+            if(p.name == name){
+                filePath = p.storedIn;
+                passwordId = p.id;
+                console.log("password found");
+                
+            }
+        });
+        // console.log("Password "+name+" not found ");
+       
+        return({filePath,passwordId});
+    }
+
+    getMetaDataByKeyName(name){
+        let filePath;
+        let keyId;
+        this.scf.keys.forEach((p)=>{
+            console.log(p);
+            if(p.name == name){
+                filePath = p.storedIn;
+                keyId = p.id;
+                console.log("password found");
+                
+            }
+        });
+        
+        return({filePath,keyId});
+    }
     fileSize(fileID){
         let size = 0;
         this.scf.fs.forEach((el)=>{

@@ -1,6 +1,7 @@
 const P = require("pino");
-const { berToJson } = require("../asn1/asn1");
+const { berToJson, jsonToBer } = require("../asn1/asn1");
 const APDU = require("../CardReader/Apdu");
+const asciiToBytes  = require("../utils/asciiToBytes");
 const hexStringToByteArray = require("../utils/hexToBytes");
 
 class Card{
@@ -9,8 +10,13 @@ class Card{
         this.reader = reader;
         this.cardInUse = false; // Lock APDU Transmissions
         this.scf = scf;
-        // this.passwords = JSON.parse(JSON.stringify(this.reader.password)); // Create copy
-        // this.keys = JSON.parse(JSON.stringify(this.reader.key)); // Create copy
+        if(this.reader.passwords){
+            this.passwords = JSON.parse(JSON.stringify(this.reader.passwords)); // Create copy
+        }
+        if(this.reader.keys){
+            this.keys = JSON.parse(JSON.stringify(this.reader.keys)); // Create copy
+        }
+        
     }
 
 
@@ -82,6 +88,26 @@ class Card{
                     resolve(Buffer.concat(completeData));
                 } 
             })()
+        })
+    }
+
+    _readFileAsJSON(filePath){
+        return new Promise((resolve, reject)=>{
+            (async()=>{
+                const fileID = filePath[filePath.length-1];
+                const dataLength = this.scf.fileSize(fileID);
+                const fileSchema = this.scf.schema(fileID);
+                console.log({dataLength,fileSchema});
+                const fileData = await this.readFileRaw(filePath, dataLength );
+                
+                if(fileData.length == 0){
+                    resolve({});
+                    return;
+                }
+                const parsedJson = await berToJson(fileData, fileSchema);
+                
+                resolve(parsedJson);
+            })();
         })
     }
 
@@ -175,48 +201,190 @@ class Card{
         
     }
 
-    async _writeRecord(filePath, recordNo, data){
+    //not tested
+    writeFileJSON(filePath, data){
+        return new Promise((resolve, reject)=>{
+            (async()=>{
+                let schema = this.scf.getSchemaFromFilePath(filePath);
+                let hexData = await jsonToBer(data,schema);
+                await this.writeFileBinary(filePath, hexData);
+                resolve();
+            })()
+        });
+    }
 
+    //not tested
+    updateFileJSON(filePath, data){
+        return new Promise((resolve, reject)=>{
+            (async()=>{
+                let schema = this.scf.getSchemaFromFilePath(filePath);
+                let hexData = await jsonToBer(data,schema);
+                await this.updateFileBinary(filePath, hexData);
+                resolve();
+            })()
+        });
     }
     
-    async _writekey(name, value){
+    // not tested
+    updateFileBinary(filePath, rawData){
+        return new Promise((resolve,reject)=>{
+            (async()=>{
+                let fileIdentifier = filePath[filePath.length-1];
+                for(var i=0;i<filePath.length;i++){
+                    await this.selectFile(filePath[i]);
+                }
+                let apdu = new APDU({cla:0x00, ins:0xD6, p1:0x0, p2:0x0, data:[...rawData], le:0x05});
+                console.log({apdu:apdu.val()});
+                const [response,status] = await this.reader.sendAPDU(apdu.val(),5);
+                console.log({response,status});
+                resolve();
+            })()
+        });
+        
+    }
+
+
+    _writeRecord(filePath, recordNo, data){
+        return new Promise((resolve, reject )=>{
+            (async()=>{
+                for(var i=0;i<filePath.length;i++){
+                    await this.selectFile(filePath[i]);
+                }
+                let apdu = new APDU({cla:0x00, ins:0xD2, p1:recordNo, p2:0x04, data:[...data],le:0x05});
+                const [response,status] = await this.reader.sendAPDU(apdu.val(),5);
+                console.log({response,status});
+                resolve();
+            })()
+        })
+    }
+    
+    async _writePassword(name, value){
+        return new Promise((resolve, reject)=>{
+            (async()=>{
+                let {filePath, passwordId} = this.scf.getMetaDataByPasswordName(name);
+                if(filePath){
+                    // for(var i=0;i<filePath.length;i++){
+                    //     await this.selectFile(filePath[i]);
+                    // }
+
+                    let data = [0x80|passwordId, 0xff]
+                    data = data.concat(asciiToBytes(value));
+                    console.log(data);
+                    await this._writeRecord(filePath,passwordId, data);
+                    resolve();
+                }
+            })()
+            
+        })
 
     }
-    async _writePassword(name, value){
+    async _writeKey(name, value){
+        return new Promise((resolve, reject)=>{
+            (async()=>{
+                let {filePath, keyId} = this.scf.getMetaDataByKeyName(name);
+                if(filePath){
+                    // for(var i=0;i<filePath.length;i++){
+                    //     await this.selectFile(filePath[i]);
+                    // }
 
+                    let data = [0x80|keyId,0x80, 0x00]
+                    data = data.concat(value);
+                    console.log(data);
+                    await this._writeRecord(filePath,keyId, data);
+                    resolve();
+                }
+            })()
+            
+        })
     }
 
     
     async registerPasswordValue(name, value){
-
+        this.passwords[name]=value;
     }
     async registerKeyValue(name, value){
-
+        this.keys[name] =value;
     }
 
 
-    async _verifyPassword(){
-
+    async _verifyPassword(name, value){
+        return new Promise((resolve, reject)=>{
+            (async()=>{
+               await this.selectFile(0x3f00);
+               let {filePath, passwordId} = this.scf.getMetaDataByPasswordName(name);
+               let pass = asciiToBytes(value)
+                let apdu = new APDU({cla:0x00, ins:0x20, p1:0x00, p2:passwordId, data:pass, le:5});
+                const [response,status] = await this.reader.sendAPDU(apdu.val(),5);
+                console.log({response,status});
+                resolve();
+            })();
+            
+        })
+    }
+    //not tested
+    computeCCT(data){
+        return new Promise((resolve,reject)=>{
+        (async()=>{
+            await this.selectFile(0x3f00);
+            let apdu = new APDU({cla:0x00, ins:0x2A, p1:0x8e, p2:0x80, data:data, le:0xff});
+            const [response,status] = await this.reader.sendAPDU(apdu.val(),0xff);
+            console.log({response,status});
+            resolve();
+        })()
+        })
     }
 
-    computeCCT(){
+    // not tested;
+    updateAttribute(attributeName,value){
 
+        return new Promise((resolve, reject)=>{
+            (async()=>{
+                let {filePath,fileId} = this.scf.getFileInfoByAttributeName(attributeName);
+                let jsonData = await this._readFileAsJSON(filePath);
+                jsonData[attributeName] = value;
+                await this.writeFileJSON(filePath,jsonData);
+                resolve();
+            })();
+        })
+    }
+    // not tested
+    writeKeyInSE(seid,key_id){
+        return new Promise((resolve, reject)=>{
+            (async()=>{
+                let data = [0x80,0x01,seid, 0x8A, 0x01, 0x05, 0xB4, 0x08, 0x80, 0x01, 0x01, 0x83, 0x01 ,key_id, 0x85 ,0x00]
+                await this._writeRecord([0x3f00, 0x3f03],seid,data)
+            })();
+        })
     }
 
+    // not tested.
+    async createCard(passwords={}, keys={}, attributes={}){
 
-    async createCard(){
+        return new Promise((resolve, reject)=>{
+            (async()=>{
 
-        
+                // create all the files.
+                this.scf.fs.forEach(f=>{
+                    await this.createFile(f.path);
+                })
 
-        // create MF:
-        // select MF;
-        // create 3f01;
-        // create 3f02
-        // create 3f03;
-        // Create personal files
-        
-        // add passwords;
-        // add keys;
+                // add passwords.
+                for(const [name,value] of Object.entries(this.passwords)){
+                    await this._writePassword(name,value)
+                }
+
+                // add keys.
+                for(const [name,value] of Object.entries(this.keys)){
+                    await this._writeKey(name,value)
+                }
+
+                // add data in SE
+                this.scf.securityEnvironment.forEach(se=>{
+                    await this.writeKeyInSE(se.seid, se.keyReference);
+                })
+
+            })();
+        })
 
     }
 
