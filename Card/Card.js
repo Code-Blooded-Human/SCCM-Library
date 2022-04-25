@@ -166,10 +166,11 @@ class Card{
         }
         let fcp;
         this.scf.scf.fs.forEach((file)=>{
-            if(file.fileId == fileIdentifier){
-                fcp = file.FCPTLVCoding;
+            if(file.id == fileIdentifier){
+                fcp = file.fcp;
             }
         })
+
         let apdu = new APDU({cla:0x00, ins:0xE0, p1:0, p2:0, data:fcp, le:0x05});
         const [response,status] = await this.reader.sendAPDU(apdu.val(),5);
 
@@ -201,23 +202,25 @@ class Card{
         
     }
 
-    //not tested
+   
     writeFileJSON(filePath, data){
         return new Promise((resolve, reject)=>{
             (async()=>{
-                let schema = this.scf.getSchemaFromFilePath(filePath);
-                let hexData = await jsonToBer(data,schema);
+                // let schema = await this.scf.getSchemaFromFilePath(filePath);
+                const fileSchema = this.scf.schema(filePath[filePath.length-1]);
+                console.log({from:'WRITE_FILE_JSON',fileSchema, filePath})
+                let hexData = await jsonToBer(data,fileSchema);
                 await this.writeFileBinary(filePath, hexData);
                 resolve();
             })()
         });
     }
 
-    //not tested
+    
     updateFileJSON(filePath, data){
         return new Promise((resolve, reject)=>{
             (async()=>{
-                let schema = this.scf.getSchemaFromFilePath(filePath);
+                let schema = this.scf.schema(filePath[filePath.length-1]);
                 let hexData = await jsonToBer(data,schema);
                 await this.updateFileBinary(filePath, hexData);
                 resolve();
@@ -225,7 +228,7 @@ class Card{
         });
     }
     
-    // not tested
+   
     updateFileBinary(filePath, rawData){
         return new Promise((resolve,reject)=>{
             (async()=>{
@@ -299,10 +302,10 @@ class Card{
     }
 
     
-    async registerPasswordValue(name, value){
+    registerPasswordValue(name, value){
         this.passwords[name]=value;
     }
-    async registerKeyValue(name, value){
+    registerKeyValue(name, value){
         this.keys[name] =value;
     }
 
@@ -334,20 +337,38 @@ class Card{
         })
     }
 
-    // not tested;
-    updateAttribute(attributeName,value){
+    //tested
+    writeAttribute(attributeName,value){
 
         return new Promise((resolve, reject)=>{
             (async()=>{
                 let {filePath,fileId} = this.scf.getFileInfoByAttributeName(attributeName);
-                let jsonData = await this._readFileAsJSON(filePath);
+                // let jsonData = await this._readFileAsJSON(filePath);
+                
+                let jsonData = {}
                 jsonData[attributeName] = value;
                 await this.writeFileJSON(filePath,jsonData);
                 resolve();
             })();
         })
     }
-    // not tested
+    
+
+    updateAttribute(attributeName,value){
+
+        return new Promise((resolve, reject)=>{
+            (async()=>{
+                let {filePath,fileId} = this.scf.getFileInfoByAttributeName(attributeName);
+                let jsonData = await this._readFileAsJSON(filePath);
+                console.log({jsonData})
+                jsonData[attributeName] = value;
+                await this.updateFileJSON(filePath,jsonData);
+                resolve();
+            })();
+        })
+    }
+    
+
     writeKeyInSE(seid,key_id){
         return new Promise((resolve, reject)=>{
             (async()=>{
@@ -357,16 +378,19 @@ class Card{
         })
     }
 
-    // not tested.
+    
     async createCard(passwords={}, keys={}, attributes={}){
 
         return new Promise((resolve, reject)=>{
             (async()=>{
 
-                // create all the files.
-                this.scf.fs.forEach(f=>{
+                let fs = this.scf.getFiles();
+                for(let i=0;i<fs.length;i++){
+                    let f = fs[i];
+                    console.log(f.path);
                     await this.createFile(f.path);
-                })
+                }
+                
 
                 // add passwords.
                 for(const [name,value] of Object.entries(this.passwords)){

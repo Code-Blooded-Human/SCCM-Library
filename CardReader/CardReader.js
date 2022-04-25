@@ -7,7 +7,7 @@ const readFileAsync = promisify(fs.readFile)
 const logger = require('pino')();
 
 
-const DUMMYREADER = true;
+const DUMMYREADER = false;
 class CardReader{
     constructor(){
         this.pcscReader = undefined;

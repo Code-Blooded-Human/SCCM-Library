@@ -26,10 +26,12 @@ class SCF{
         (async()=>{
             let schema;
             this.scf.fs.forEach((f)=>{
-                if(f.path.toString() == filePath.toString){
+                console.log({1:f.path.toString() , 2: filePath.toString()});
+                if(f.path.toString() == filePath.toString()){
                     schema = f.asn1Schema;
                 }
             })
+            console.log({schema});
             return schema;
         })();
     }

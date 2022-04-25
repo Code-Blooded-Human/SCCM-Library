@@ -41,12 +41,14 @@ function jsonToBer(jsonData, asn1Schema){
     return new Promise((resolve,reject)=>{
         (async()=>{
 
-        await writeFileAsync("/tmp/json_data.json", jsonData)
+            console.log({from:"JSONTOBER", jsonData, asn1Schema})
+        await writeFileAsync("/tmp/json_data.json", JSON.stringify(jsonData))
         await writeFileAsync("/tmp/asn1Schema.asn", asn1Schema);
 
         const asn1SchemaAsArray = asn1Schema.split(" ");
         const asn1Identifier = asn1SchemaAsArray[asn1SchemaAsArray.indexOf('BEGIN')+1]
 
+        console.log({from:"JSON TO BER",asn1Identifier, command:`python3 ~/.local/bin/asn1helper.py JSONToBer /tmp/asn1Schema.asn /tmp/json_data.json /tmp/out.hex ${asn1Identifier}`})
         const { stdout, stderr } = await exec(`python3 ~/.local/bin/asn1helper.py JSONToBer /tmp/asn1Schema.asn /tmp/json_data.json /tmp/out.hex ${asn1Identifier}`);
         if(stderr){
             throw(stderr);

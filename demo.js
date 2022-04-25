@@ -13,6 +13,25 @@ const writeFileAsync = promisify(fs.writeFile)
 
 async function onCardConnect(card){
     console.log("Card Connection established");
+
+    // await card.createCard();
+
+    // await card.writeAttribute("name","Abhishek P");
+    // await card.updateAttribute("age","50");
+    // let age = await card.readAttribute("age");
+    // console.log(age);
+    // await card.updateAttribute("name", "Kumari Rani")
+    // await card._writeKey('cctKey',[0,0,0,0,0,0,0,0])
+
+    // await card.writeKeyInSE(1,1);
+
+
+    let cct = await card.computeCCT([0,0,0,0,0,0,0,0,0]);
+    console.log(cct);
+
+
+    
+
     
     // let data = await card.readAttribute(['name']);
     // console.log(data);
@@ -30,8 +49,8 @@ async function onCardConnect(card){
     // await card._writeKey("Key1",[0x01,0x02,0x03,0x04,0x01,0x02,0x03,0x04,0x01,0x02,0x03,0x04,0x01,0x02,0x03,0x04])
     // await card._verifyPassword("Pass1", "abhi");
 
-    let j = await card._readFileAsJSON([0x3f00,0x3f04]);
-    console.log(j);
+    // let j = await card._readFileAsJSON([0x3f00,0x3f04]);
+    // console.log(j);
 
     //CREATE 3f00
     // let d=[0x62, 33, 0x82, 0x01, 0x38, 0x83, 0x02, 0x3f, 0x00, 0x8a, 0x01, 0x05, 0xab, 17, 0x80, 0x01, 0x7f, 0x97, 0x00,  0x97, 0x00, 0x90, 0x00, 0x97, 0x00, 0x90, 0x00, 0x90, 0x00, 0x97, 0x00, 0x8d, 0x02, 0x3f, 0x03]
@@ -99,5 +118,5 @@ async function onCardConnect(card){
 
    
 }
-cardReader.registerSCF('./demo/scf1.hjson');
+cardReader.registerSCF('./demo/updated.hjson');
 cardReader.onCardConnect(onCardConnect);

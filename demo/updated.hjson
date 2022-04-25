@@ -1,0 +1,130 @@
+{
+	header:
+	{
+		description: This is a sample SCCM Configuration File
+		policymaker: {name: "Kumari Rani", email: "krani@iitbhilai.ac.in"}
+		version: "1.0"
+		hash: ""
+		createdFrom: ""
+		backwardCompatible: true
+		createdOn: 2022-3-18 3:34:55
+	}
+	keys:
+	[
+		{id: 1, name: "cctKey", storedIn: [16128, 16130], maxSize: 16, usedForChecksumComputation: true, description: ""}
+	]
+	passwords:
+	[
+		{id: 1, name: "adminPass", storedIn: [16128, 16129], maxSize: 15, description: ""}
+	]
+	securityEnvironment:
+	[
+		{seid: 1, keyReference: 1}
+	]
+	accessRules:
+	[
+		{
+			id: 0
+			name: adminControl
+			condition:
+			{
+				leftClause: {id: 1, name: "adminPass", storedIn: [16128, 16129], maxSize: 15, description: ""}
+				operator: None
+				rightClause: Always
+			}
+			description: ""
+		}
+	]
+	attributes:
+	[
+		{
+			id: 0
+			name: name
+			type: String
+			maxSize: 40
+			permisionContol: {read: "Always", write: "Always", update: "Always"}
+			description: ""
+			storedIn: [16128, 16132]
+		}
+		{
+			id: 1
+			name: age
+			type: String
+			maxSize: 15
+			permisionContol: {read: "Always", write: "Always", update: "Always"}
+			description: ""
+			storedIn: [16128, 16132]
+		}
+	]
+	fs:
+	[
+		{
+			id: 16128
+			path: [16128]
+			size: 0
+			permissionControl: {createDf: "Always", createEf: "Always", deleteChild: "Never"}
+			type: DF
+			maxRecordSize: undefined
+			numberRecord: undefined
+			fcp: [98, 33, 130, 1, 56, 131, 2, 63, 0, 138, 1, 5, 171, 17, 128, 1, 127, 151, 0, 151, 0, 144, 0, 151, 0, 144, 0, 144, 0, 151, 0, 141, 2, 63, 3]
+			asn1Schema: undefined
+			description: Master File
+		}
+		{
+			id: 16129
+			path: [16128, 16129]
+			size: 0
+			permissionControl: {read: "Always", write: "Always", update: "Always"}
+			type: EF
+			maxRecordSize: 15
+			numberRecord: 1
+			fcp: [98, 36, 130, 5, 12, 1, 0, 15, 1, 131, 2, 63, 1, 136, 1, 8, 138, 1, 5, 171, 17, 128, 1, 127, 151, 0, 151, 0, 144, 0, 151, 0, 144, 0, 144, 0, 144, 0]
+			asn1Schema: undefined
+			description: PIN file
+		}
+		{
+			id: 16130
+			path: [16128, 16130]
+			size: 0
+			permissionControl: {read: "Always", write: "Always", update: "Always"}
+			type: EF
+			maxRecordSize: 16
+			numberRecord: 1
+			fcp: [98, 36, 130, 5, 12, 1, 0, 16, 1, 131, 2, 63, 2, 136, 1, 16, 138, 1, 5, 171, 17, 128, 1, 127, 151, 0, 151, 0, 144, 0, 151, 0, 144, 0, 144, 0, 144, 0]
+			asn1Schema: undefined
+			description: Key file
+		}
+		{
+			id: 16131
+			path: [16128, 16131]
+			size: 0
+			permissionControl: {read: "Always", write: "Always", update: "Always"}
+			type: EF
+			maxRecordSize: 16
+			numberRecord: 1
+			fcp: [98, 36, 130, 5, 12, 1, 0, 16, 1, 131, 2, 63, 3, 136, 1, 24, 138, 1, 5, 171, 17, 128, 1, 127, 151, 0, 151, 0, 144, 0, 151, 0, 144, 0, 144, 0, 144, 0]
+			asn1Schema: undefined
+			description: Security environment file
+		}
+		{
+			id: 16132
+			path: [16128, 16132]
+			size: 55
+			permissionControl: {read: "Always", write: "Always", update: "Always"}
+			type: EF
+			maxRecordSize: undefined
+			numberRecord: undefined
+			fcp: [98, 37, 128, 2, 0, 55, 130, 2, 1, 1, 131, 2, 63, 4, 136, 1, 32, 138, 1, 5, 171, 17, 128, 1, 127, 151, 0, 151, 0, 144, 0, 151, 0, 144, 0, 144, 0, 144, 0]
+			asn1Schema:
+				'''
+				AttributesInfo 
+				DEFINITIONS IMPLICIT TAGS ::= BEGIN Info ::= SEQUENCE {
+					name UTF8String, 
+					age UTF8String OPTIONAL
+				} 
+				END
+				'''
+			description: ""
+		}
+	]
+}
